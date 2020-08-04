@@ -13,7 +13,7 @@ func comma2(s string) string {
 		if idx != 0 && idx % 3 == n % 3 {
 			buf.WriteByte(',')
 		}
-		fmt.Fprintf(&buf, "%d", char)
+		buf.WriteRune(char)
 	}
 	return buf.String()
 }
