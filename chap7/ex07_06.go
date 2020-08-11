@@ -31,7 +31,7 @@ func CelsiusFlag(name string, defaultVal tempcov.Celsius, usage string) *tempcov
 	return &f.Celsius
 }
 
-var temp = CelsiusFlag("temp", 20.0, "the temperature")
+var temp = CelsiusFlag("temp", tempcov.Celsius(20.0), "the temperature")
 
 func main() {
 	flag.Parse()
