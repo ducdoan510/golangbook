@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -19,25 +20,28 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		go handleConn3(conn)
+		go handleConn4(conn)
 	}
 }
 
-func echo(c net.Conn, shout string, delay time.Duration) {
+func echo2(c net.Conn, shout string, delay time.Duration, wg *sync.WaitGroup) {
 	fmt.Fprintln(c, "\t", strings.ToUpper(shout))
 	time.Sleep(delay)
 	fmt.Fprintln(c, "\t", shout)
 	time.Sleep(delay)
 	fmt.Fprintln(c, "\t", strings.ToLower(shout))
+	fmt.Println(shout)
+	wg.Done()
 }
 
-func handleConn3(c net.Conn) {
+func handleConn4(c net.Conn) {
 	sc := bufio.NewScanner(c)
+	wg := sync.WaitGroup{} // count the number of active 'echo' goroutine
+
 	for sc.Scan() {
-		// this is not a go routine so that the shouts are printed in the sequence of input
-		// to make this a goroutine, extra handle needs to be done to make sure all the shouts are finished using wait group
-		// refer to reverb2
-		echo(c, sc.Text(), 1 * time.Second)
+		wg.Add(1)
+		go echo2(c, sc.Text(), 1 * time.Second, &wg)
 	}
+	wg.Wait()
 	c.Close()
 }

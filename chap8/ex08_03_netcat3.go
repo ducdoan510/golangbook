@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -9,6 +10,7 @@ import (
 
 func main() {
 	conn, err := net.Dial("tcp", "localhost:8000")
+	fmt.Println(conn)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -19,7 +21,17 @@ func main() {
 		done <- true
 	}()
 	mustCopy3(conn, os.Stdin)
-	conn.Close()
+	switch conn := conn.(type) {
+	case *net.TCPConn:
+		log.Println("TCPConn")
+		err := conn.CloseWrite()
+		if err != nil {
+			log.Println(err)
+		}
+	default:
+		conn.Close()
+	}
+	fmt.Println("release done")
 	<-done
 }
 
