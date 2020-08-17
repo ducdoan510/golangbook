@@ -26,6 +26,7 @@ func updateLineMap(fileName string, mapping map[string][]string) {
 		fmt.Fprintf(os.Stderr, "Error opening file: %s\n", fileName)
 		os.Exit(1)
 	}
+	defer file.Close()
 	sc := bufio.NewScanner(file)
 	for sc.Scan() {
 		line := sc.Text()
